@@ -1,0 +1,26 @@
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.03);
+  }
+  40% {
+    transform: scale(var(--bounce-scale));
+  }
+  60% {
+    transform: scale(calc(var(--bounce-scale) - 0.03));
+  }
+  75% {
+    transform: scale(0.97);
+  }
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(var(--slide-start-x, 0));
+  }
+  to {
+    transform: translateX(var(--slide-end-x, 0));
+  }
+}

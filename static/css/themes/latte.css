@@ -1,0 +1,21 @@
+html[data-theme="latte"] {
+  /* Latte Colors */
+
+  --base: 220deg 23% 95%;
+  --mantle: 220deg 22% 92%;
+  --crust: 220 21% 89%;
+
+  --surface-2: 227deg 12% 71%;
+  --surface-1: 225deg 14% 77%;
+  --surface-0: 223deg 16% 83%;
+
+  --overlay-2: 232deg 10% 53%;
+  --overlay-1: 231deg 10% 59%;
+  --overlay-0: 228deg 11% 65%;
+
+  --accent: 351deg 74% 73%;
+
+  --text: 234deg 16% 35%;
+  --subtext-1: 233deg 13% 41%;
+  --subtext-0: 233deg 10% 47%;
+}

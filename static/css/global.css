@@ -1,0 +1,67 @@
+@import "themes/latte.css";
+
+:root {
+  /* Macchiato Colors */
+
+  --base: 232deg 23% 18%;
+  --mantle: 233deg 23% 15%;
+  --crust: 236deg 23% 12%;
+
+  --surface-2: 230deg 14% 26%;
+  --surface-1: 231deg 16% 34%;
+  --surface-0: 230deg 19% 26%;
+
+  --overlay-2: 228deg 20% 57%;
+  --overlay-1: 228deg 15% 57%;
+  --overlay-0: 230deg 12% 49%;
+
+  --accent: 267deg 84% 81%;
+
+  --text: 227deg 68% 88%;
+  --subtext-2: 227deg 27% 80%;
+  --subtext-1: 228deg 39% 72%;
+  --subtext-0: 227deg 27% 50%;
+
+  /* Spacing */
+
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
+  --spacing-3xl: 3rem;
+
+  --rounded-sm: 0.25rem;
+  --rounded-md: 0.5rem;
+  --rounded-lg: 1rem;
+  --rounded-xl: 1.5rem;
+  --rounded-full: 999px;
+
+  /* Fonts */
+
+  --font-xs: 8pt;
+  --font-sm: 10pt;
+  --font-md: 12pt;
+  --font-lg: 14pt;
+  --font-xl: 16pt;
+  --font-2xl: 20pt;
+  
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-bold: 600;
+
+  /* Animations */
+  
+  --transition-duration: 0.2s;
+  --transition-properties: all;
+  --transition-easing: ease-in-out;
+  --transition: var(--transition-properties) var(--transition-easing) var(--transition-duration);
+
+  --bounce-scale: 1.2;
+  
+  --animation: bounce;
+  --play-animation: var(--animation) var(--transition-duration) var(--transition-easing);
+
+}
