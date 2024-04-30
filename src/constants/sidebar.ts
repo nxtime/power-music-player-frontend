@@ -1,9 +1,11 @@
+import { homeIcon } from "$lib/icons/generic";
 import type { SidebarList } from "../interfaces/sidebar";
 
 export const NAVIGATION = [
   {
     name: "Home",
     title: "Your home page - Showing the latest musics",
+    icon: homeIcon,
     url: "/"
   },
   // {

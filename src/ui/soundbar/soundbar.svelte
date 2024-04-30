@@ -51,8 +51,8 @@
     currentVolume = volume * 100;
 
     if (song && album) {
-      const normalizedAlbum = album.replace(" ", "-").toLowerCase();
-      const normalizedSong = song.replace(" ", "-").toLowerCase();
+      const normalizedAlbum = album.replaceAll(" ", "-").toLowerCase();
+      const normalizedSong = song.replaceAll(" ", "-").toLowerCase();
       
       image = `https://s3.marcospaulo.dev.br/${normalizedAlbum}/${normalizedSong}.jpg`;
       defaultImage = `https://s3.marcospaulo.dev.br/${normalizedAlbum}/${normalizedAlbum}.jpg`;
@@ -317,6 +317,25 @@
 
     & .soundbar-actions {
       max-width: 200px;
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .soundbar-container {
+      flex-direction: column;
+      height: 12rem;
+      gap: 0.5rem;
+
+    }
+
+    .soundbar-container .soundbar-info,
+    .soundbar-container .soundbar-controls {
+      min-width: 100%;
+    }
+
+    .soundbar-container .soundbar-info .song-info {
+      font-size: var(--font-md);
+      width: 100%;
     }
   }
 </style>

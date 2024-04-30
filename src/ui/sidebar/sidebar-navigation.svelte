@@ -3,10 +3,10 @@
 </script>
 
 <ul class="navigation-container">
-  {#each NAVIGATION as { url, name, title }}
+  {#each NAVIGATION as { url, name, icon, title }}
     <li class="navigation-item">
       <a class={url === "/" ? "active" : ""} href={url} {title}>
-        {name}
+        {@html icon} <span>{name}</span>
       </a>
     </li>
   {/each}
@@ -22,7 +22,13 @@
       position: relative;
       display: flex;
       align-items: center;
-      padding: var(--spacing-xs) var(--spacing-md);
+      height: var(--spacing-2xl);
+      gap: var(--spacing-sm);
+      padding-left: var(--spacing-xs);
+
+      & > * {
+        position: relative;
+      }
 
       &::before {
         content: "";
@@ -32,7 +38,6 @@
         height: 100%;
         background-color: hsl(var(--mantle));
         border-radius: var(--rounded-md);
-        z-index: -1;
         transition: width ease-in-out 0.2s;
       }
 

@@ -37,4 +37,10 @@
       }
     }
   }
+
+  @media (max-width: 30rem) {
+    .search-container {
+      margin-left: auto;
+    }
+  }
 </style>

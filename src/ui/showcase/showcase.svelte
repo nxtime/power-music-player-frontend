@@ -19,6 +19,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
+    overflow-y: auto;
 
     & .showcase-playlist-container {
       display: grid;

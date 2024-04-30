@@ -170,4 +170,14 @@
       }
     }
   }
+
+  @media (max-width: 30rem) {
+    .album-container .album-banner-container {
+      height: 20vh;
+    }
+
+    .header-navigation {
+      margin-left: auto;
+    }
+  }
 </style>
