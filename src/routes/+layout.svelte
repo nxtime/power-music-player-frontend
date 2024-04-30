@@ -19,6 +19,7 @@
 
     & .page {
       display: flex;
+      overflow: hidden;
       flex: 1;
     }
   }

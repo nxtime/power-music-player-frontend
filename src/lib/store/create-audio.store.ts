@@ -47,11 +47,20 @@ const createAudioStore = (): AudioStore => {
 
     update((state) => {
       if (state.isPlaying && state.audioElement) {
+        state.audioElement.pause();
         state.audioElement.remove();
       }
 
-      return defaultAudioState;
+      return {
+        ...defaultAudioState,
+        volume: state.volume
+      };
     });
+
+    if (!!get(audioStore).audioElement) {
+      get(audioStore).audioElement!.pause();
+      get(audioStore).audioElement!.remove();
+    }
 
     const audioElement = new Audio(url);
 
@@ -60,6 +69,8 @@ const createAudioStore = (): AudioStore => {
     })
 
     audioElement.play();
+
+    audioElement.volume = get(audioStore).volume;
 
     intervalId = setInterval(() => {
       update((state) => ({ ...state, duration: audioElement.duration }))
@@ -104,7 +115,7 @@ const createAudioStore = (): AudioStore => {
   const setVolume = (value: number) => {
     update((state) => {
       if (state.audioElement) {
-        state.audioElement.pause();
+        state.audioElement.volume = value;
       }
       return { ...state, volume: value }
     });
@@ -113,7 +124,7 @@ const createAudioStore = (): AudioStore => {
   const seek = (seconds: number) => {
     update((state) => {
       if(state.audioElement) {
-        state.audioElement.currentTime += seconds;
+        state.audioElement.currentTime = seconds;
       }
 
       return state;

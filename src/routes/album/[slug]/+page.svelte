@@ -2,17 +2,26 @@
 	import type { Album } from "../../../interfaces/music";
   import { playTrackIcon } from "$lib/icons/soundbar";
   import { audioStore } from '$lib/store/create-audio.store';
-
-
-  const { isPlaying } = $audioStore;
-
-  console.log({ isPlaying });
+  import { albumStore } from '$lib/store/album.store';
+	import { onMount } from "svelte";
 
   export let data: Album;
 
   const { cover, name, songs } = data;
 
   const album = name;
+  const normalizedAlbumName = album.replaceAll(" ","-").toLowerCase();
+
+  const defaultImage = `https://s3.marcospaulo.dev.br/${normalizedAlbumName}/${normalizedAlbumName}.jpg`;
+
+  onMount(() => {
+    albumStore.set({
+      album: name,
+      currentSongName: "",
+      currentSongIndex: -1,
+      songs: songs.map(({ name }) => name)
+    });
+  });
 
 </script>
 
@@ -29,7 +38,7 @@
       </div>
     </header>
     <div class="album-banner">
-      <img src="data:image/jpeg;base64,{cover}" alt={name} />
+      <img src="{cover}" alt={name} />
       <div class="album-banner-info">
         <span class="subtitle">Playlist</span>
         <h2 class="title">Mix de {album}</h2>
@@ -39,14 +48,22 @@
   </div>
   <div class="container">
     <ul class="songs-container">
-      {#each songs as { name, cover }}
+      {#each songs as { name, cover }, index}
         <li class="song-item">
-          <img src={cover} alt={name} width={64} />
+          {@html `<img src="${cover}" alt="${name}" width="${64}px" height="${64}px" onerror="this.onerror=null;this.src='${defaultImage}';" />`}
           <div class="song-info">
             <span>{name}</span>
           </div>
           <div class="song-control">
-            <button type="button" on:click={() => audioStore.playAudio(album, name)}>
+            <button type="button" on:click={() => {
+                albumStore.update((prevState) => ({
+                    ...prevState,
+                    currentSongName: name,
+                    currentSongIndex: index
+                  }));
+
+                audioStore.playAudio(album, name)
+              }}>
               {@html playTrackIcon}
             </button>
           </div>
@@ -62,6 +79,7 @@
     flex-direction: column;
     width: 100%;
     flex: 1;
+    overflow: hidden;
     background-image: linear-gradient(hsl(var(--accent)) 0%, transparent 60%);
 
     & .album-banner-container {
@@ -101,6 +119,7 @@
     padding: var(--spacing-md);
     background-color: hsl(var(--base) / 0.5);
     flex: 1;
+    overflow-y: auto;
 
     & header {
       display: flex;
@@ -124,7 +143,12 @@
         gap: var(--spacing-md);
 
         & img {
+          --size: 4rem;
+          height: var(--size);
+          width: var(--size);
+          object-fit: cover;
           border-radius: var(--rounded-md);
+          overflow: hidden;
         }
 
         & .song-info > span {

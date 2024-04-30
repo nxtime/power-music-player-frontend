@@ -3,40 +3,71 @@
   import { formatTime } from "$lib/utils/format-number";
 
   import { audioStore, type AudioState } from '$lib/store/create-audio.store';
+	import { albumStore } from "$lib/store/album.store";
   
 
-  const { isPlaying, currentTime, duration, volume, song, album } = $audioStore;
+  const { isPlaying, currentTime, duration, song, album } = $audioStore;
+  
+  const handleChange = (event: any) => {
+    audioStore.setVolume(Number(event.target.value) / 100);
+  }
 
-  /* const song = {
-    name: "Angels",
-    cover: "https://d1csarkz8obe9u.cloudfront.net/themedlandingpages/tlp_hero_album-cover-art-73ab5b3d9b81f442cb2288630ab63acf.jpg?ts%20=%201698245952",
-    artist: {
-      name: "The XX",
-      id: "1232323213",
-    },
-    playlist: {
-      name: "COEXIST",
-      id: "123232323"
-    },
-    time: 124,
-    isFav: true
-  } */
+  const handleSeekChange = (event: any) => {
+    audioStore.seek(Number(event.target.value));
+  }
 
-   const cover = "https://d1csarkz8obe9u.cloudfront.net/themedlandingpages/tlp_hero_album-cover-art-73ab5b3d9b81f442cb2288630ab63acf.jpg?ts%20=%201698245952";
+  const handleNextTrack = () => {
+    const tempNextSongIndex = $albumStore.currentSongIndex + 1;
+
+    const nextSongIndex = tempNextSongIndex > $albumStore.songs.length - 1 ? 0 : tempNextSongIndex;
+
+    const nextSong = $albumStore.songs[nextSongIndex];
+
+    albumStore.update((prevState) => ({ ...prevState, currentSongIndex: nextSongIndex, currentSongName: nextSong }));
+    audioStore.playAudio($albumStore.album, nextSong);
+  }
+
+  const handlePreviousTrack = () => {
+    const tempPreviousSongIndex = $albumStore.currentSongIndex - 1;
+
+    const previousSongIndex = tempPreviousSongIndex < 0 ? $albumStore.songs.length - 1 : tempPreviousSongIndex;
+
+    const previousSong = $albumStore.songs[previousSongIndex];
+
+    albumStore.update((prevState) => ({ ...prevState, currentSongIndex: previousSongIndex, currentSongName: previousSong }));
+    audioStore.playAudio($albumStore.album, previousSong);
+
+  }
+
+  let image = "";
+  let defaultImage = "";
+  let currentVolume = 0;
 
   let progress = 0;
 
-  audioStore.subscribe(({ currentTime, duration }) => progress = currentTime * 100 / duration)
+  audioStore.subscribe(({ currentTime, duration, song, album, volume }) => {
+    progress = currentTime * 100 / duration;
 
+    currentVolume = volume * 100;
+
+    if (song && album) {
+      const normalizedAlbum = album.replace(" ", "-").toLowerCase();
+      const normalizedSong = song.replace(" ", "-").toLowerCase();
+      
+      image = `https://s3.marcospaulo.dev.br/${normalizedAlbum}/${normalizedSong}.jpg`;
+      defaultImage = `https://s3.marcospaulo.dev.br/${normalizedAlbum}/${normalizedAlbum}.jpg`;
+    }
+  });
+
+  albumStore.subscribe(console.log);
+  
   const isFav = false;
-
-
 </script>
 
 {#if $audioStore.song}
 <div class="soundbar-container">
   <div class="soundbar-info">
-    <img class="cover-image" src={cover} alt={song} title={song} width={52} />
+    {@html `<img class="cover-image" src="${image}" alt="${song}" title="${song}" width="52px" height="52px" onerror="this.error=null;this.src='${defaultImage}'" />`}
     <div class="song-info">
       <div class="song-actions">
         <span class="song-name">{$audioStore.song}</span>
@@ -70,7 +101,11 @@
       <button type="button" title="Enable random tracks" disabled>
         {@html sortRandomIcon}
       </button>
-      <button type="button" title="Previous track">
+      <button 
+        type="button" 
+        title="Previous track" 
+        on:click={handlePreviousTrack} 
+      >
         {@html previousTrackIcon}
       </button>
       <button type="button" title={$audioStore.isPlaying ? 'Pause' : 'Play'} on:click={$audioStore.isPlaying ? audioStore.pauseAudio : audioStore.resumeAudio}>
@@ -80,7 +115,7 @@
           {@html playTrackIcon}
         {/if}
       </button>
-      <button type="button" title="Next track">
+      <button type="button" title="Next track" on:click={handleNextTrack}>
         {@html nextTrackIcon}
       </button>
       <button type="button" title="Repeat track" disabled>
@@ -89,21 +124,80 @@
     </div>
     <div class="soundbar-controls-inferior">
       <span class="time song-time-elapsed">{formatTime($audioStore.currentTime)}</span>
-      <div class="progress-bar" style="--progress: {progress}%"/>
+      <input
+        class="progress"
+        type="range"
+        min="0"
+        max={$audioStore.duration}
+        step="1"
+        bind:value={currentVolume}
+        style={`--percentage: ${progress}`}
+        on:input={handleSeekChange}
+      />
       <span class="time song-time">{formatTime($audioStore.duration)}</span>
     </div>
   </div>
   <div class="soundbar-actions">
-    
+    <input
+      class="progress"
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      title={`Volume ${currentVolume}%`}
+      bind:value={currentVolume}
+      style={`--percentage: ${currentVolume}`}
+      on:input={handleChange}
+    />
   </div>
 </div>
 {/if}
 
 <style>
+  .progress {
+    cursor: pointer;
+    position: relative;
+    height: 4px;
+    appearance: none;
+    width: 100%;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      border: none;
+      height: 2px;
+      width: 2px;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      background-color: hsl(var(--surface-0));
+      border-radius: var(--rounded-full);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: calc(var(--percentage) * 1%);
+      height: 100%;
+      background-color: hsl(var(--accent));
+      border-radius: var(--rounded-full);
+    }
+
+    &:hover::after {
+      background-color: hsl(var(--accent) / 0.75);
+    }
+  }
+
   .soundbar-container {
     font-size: var(--font-sm);
     height: 5rem;
-    padding: var(--spacing-md);
+    min-height: 5rem;
+    padding: var(--spacing-sm);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -113,9 +207,17 @@
 
     & .soundbar-info {
       display: flex;
+      align-items: center;
       gap: var(--spacing-xs);
+      text-overflow: ellipsis;
+      max-width: 15rem;
+      overflow: hidden;
 
       & .cover-image {
+        --size: 52px;
+        width: var(--size);
+        height: var(--size);
+        object-fit: cover;
         border-radius: var(--rounded-md);
 
         &:hover {
@@ -130,6 +232,8 @@
       & .song-info {
         display: flex;
         flex-direction: column;
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
         & .song-actions {
           display: flex;
@@ -209,6 +313,10 @@
           }
         }
       }
+    }
+
+    & .soundbar-actions {
+      max-width: 200px;
     }
   }
 </style>
