@@ -1,4 +1,4 @@
-export const sortRandomIcon = `
+export const randomTrackIcon = `
 <svg xmlns="http://www.w3.org/2000/svg" width="0.75em" height="0.75em" viewBox="0 0 24 24">
 	<g fill="none">
 		<path stroke="currentColor" stroke-width="2" d="M3 7h1.78c2.152 0 3.228 0 4.1.456a4 4 0 0 1 1.005.749c.688.703.997 1.734 1.615 3.795s.928 3.092 1.615 3.795c.294.301.633.554 1.006.749c.871.456 1.947.456 4.1.456H21m0 0l-3-3m3 3l-3 3" />
@@ -28,6 +28,12 @@ export const repeatTrackIcon = `
 </svg>
 `
 
+export const sequenceTrackIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="0.75em" height="0.75em" viewBox="0 0 24 24">
+	<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
+</svg>
+`
+
 export const playTrackIcon = `
 <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
 	<path fill="currentColor" d="M16.138 10.569L9.605 7.302A1.8 1.8 0 0 0 7 8.912v6.176a1.8 1.8 0 0 0 2.605 1.61l6.533-3.267c1.18-.59 1.18-2.272 0-2.862" />
@@ -39,3 +45,4 @@ export const pauseTrackIcon = `
 	<path fill="currentColor" d="M15 7a1 1 0 1 1 2 0v10a1 1 0 1 1-2 0zM7 7a1 1 0 0 1 2 0v10a1 1 0 1 1-2 0z" />
 </svg>
 `
+

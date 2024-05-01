@@ -1,4 +1,4 @@
-import { homeIcon } from "$lib/icons/generic";
+import { homeIcon, songIcon } from "$lib/icons/generic";
 import type { SidebarList } from "../interfaces/sidebar";
 
 export const NAVIGATION = [
@@ -8,11 +8,12 @@ export const NAVIGATION = [
     icon: homeIcon,
     url: "/"
   },
-  // {
-  //   name: "Explore",
-  //   title: "Shows current trending musics, or the ones you haven't listened on for a while",
-  //   url: "/explore"
-  // },
+  {
+    name: "Songs",
+    title: "Shows current trending musics, or the ones you haven't listened on for a while",
+    icon: songIcon,
+    url: "/songs"
+  },
   // {
   //   name: "Download",
   //   title: "Get new musics, via playlist url, or name",

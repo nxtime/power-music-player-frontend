@@ -1,12 +1,18 @@
 <script lang="ts">
-  import { sortRandomIcon, nextTrackIcon, repeatTrackIcon, previousTrackIcon, playTrackIcon, pauseTrackIcon } from "$lib/icons/soundbar";
+  import { randomTrackIcon, sequenceTrackIcon, repeatTrackIcon, nextTrackIcon, previousTrackIcon, playTrackIcon, pauseTrackIcon } from "$lib/icons/soundbar";
   import { formatTime } from "$lib/utils/format-number";
 
   import { audioStore, type AudioState } from '$lib/store/create-audio.store';
-	import { albumStore } from "$lib/store/album.store";
-  
+	import { albumStore, handleNextTrack, handlePreviousTrack } from "$lib/store/album.store";
+  import { TrackSequence } from "../../interfaces/music";
 
-  const { isPlaying, currentTime, duration, song, album } = $audioStore;
+  const trackSequenceIcons: Record<TrackSequence, string> = {
+    [TrackSequence.Random]: randomTrackIcon,
+    [TrackSequence.Sequence]: sequenceTrackIcon,
+    [TrackSequence.Repeat]: repeatTrackIcon,
+  }
+
+  const { song } = $audioStore;
   
   const handleChange = (event: any) => {
     audioStore.setVolume(Number(event.target.value) / 100);
@@ -16,39 +22,22 @@
     audioStore.seek(Number(event.target.value));
   }
 
-  const handleNextTrack = () => {
-    const tempNextSongIndex = $albumStore.currentSongIndex + 1;
-
-    const nextSongIndex = tempNextSongIndex > $albumStore.songs.length - 1 ? 0 : tempNextSongIndex;
-
-    const nextSong = $albumStore.songs[nextSongIndex];
-
-    albumStore.update((prevState) => ({ ...prevState, currentSongIndex: nextSongIndex, currentSongName: nextSong }));
-    audioStore.playAudio($albumStore.album, nextSong);
-  }
-
-  const handlePreviousTrack = () => {
-    const tempPreviousSongIndex = $albumStore.currentSongIndex - 1;
-
-    const previousSongIndex = tempPreviousSongIndex < 0 ? $albumStore.songs.length - 1 : tempPreviousSongIndex;
-
-    const previousSong = $albumStore.songs[previousSongIndex];
-
-    albumStore.update((prevState) => ({ ...prevState, currentSongIndex: previousSongIndex, currentSongName: previousSong }));
-    audioStore.playAudio($albumStore.album, previousSong);
-
-  }
-
   let image = "";
   let defaultImage = "";
   let currentVolume = 0;
 
   let progress = 0;
 
-  audioStore.subscribe(({ currentTime, duration, song, album, volume }) => {
+  let currentTrackSequenceIcon = "";
+
+  audioStore.subscribe(({ currentTime, duration, song, album, volume, trackSequence }) => {
     progress = currentTime * 100 / duration;
 
     currentVolume = volume * 100;
+
+    if (trackSequence !== currentTrackSequenceIcon) {
+      currentTrackSequenceIcon = trackSequenceIcons[trackSequence];
+    }
 
     if (song && album) {
       const normalizedAlbum = album.replaceAll(" ", "-").toLowerCase();
@@ -58,7 +47,7 @@
       defaultImage = `https://s3.marcospaulo.dev.br/${normalizedAlbum}/${normalizedAlbum}.jpg`;
     }
   });
-
+ 
   albumStore.subscribe(console.log);
   
   const isFav = false;
@@ -98,8 +87,8 @@
   </div>
   <div class="soundbar-controls">
     <div class="soundbar-controls-superior">
-      <button type="button" title="Enable random tracks" disabled>
-        {@html sortRandomIcon}
+      <button type="button" title="Enable random tracks" on:click={audioStore.changeTrackSequence}>
+        {@html currentTrackSequenceIcon}
       </button>
       <button 
         type="button" 

@@ -2,12 +2,12 @@ import { api } from "$lib/api";
 
 export async function load() {
   try {
-    const { data } = await api.get("/albums");
+    const { data } = await api.get("/songs");
 
-    return { albums: data };
+    return { songs: data };
   } catch(err) {
     return {
-      albums: []
+      songs: []
     };
   }
 }

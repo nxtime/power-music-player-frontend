@@ -1,5 +1,7 @@
 import { api } from '$lib/api';
 import { get, writable, type Writable } from 'svelte/store';
+import { handleNextTrack } from './album.store';
+import { TrackSequence } from '../../interfaces/music';
 
 export interface AudioState {
   audioElement: HTMLAudioElement | null;
@@ -10,23 +12,31 @@ export interface AudioState {
   currentTime: number;
   duration: number;
   volume: number;
+  trackSequence: TrackSequence;
+}
+
+const TrackSequenceOrder: Record<TrackSequence, TrackSequence> = {
+  [TrackSequence.Random]: TrackSequence.Sequence,
+  [TrackSequence.Sequence]: TrackSequence.Repeat,
+  [TrackSequence.Repeat]: TrackSequence.Random
 }
 
 interface AudioStore extends Writable<AudioState> {
-  playAudio: (album: string, song: string) => void;
-  pauseAudio: () => void;
-  resumeAudio: () => void;
-  setVolume: (value: number) => void;
-  seek: (seconds: number) => void;
+  playAudio(album: string, song: string): void;
+  pauseAudio(): void;
+  resumeAudio(): void;
+  setVolume(value: number): void;
+  seek(seconds: number): void;
+  changeTrackSequence(): void
 }
-const defaultAudioState = {
+
+const defaultAudioState: AudioState  = {
     audioElement: null,
-    song: undefined,
-    album: undefined,
     isPlaying: false,
     currentTime: 0,
     duration: 0,
-    volume: 1
+    volume: 1,
+    trackSequence: TrackSequence.Sequence
   }
 
 const createAudioStore = (): AudioStore => {
@@ -53,19 +63,28 @@ const createAudioStore = (): AudioStore => {
 
       return {
         ...defaultAudioState,
+        trackSequence: state.trackSequence,
         volume: state.volume
       };
     });
 
-    if (!!get(audioStore).audioElement) {
-      get(audioStore).audioElement!.pause();
-      get(audioStore).audioElement!.remove();
+    const storeAudioElement = get(audioStore).audioElement;
+
+    if (!!storeAudioElement) {
+      storeAudioElement.pause();
+      storeAudioElement.remove();
     }
 
     const audioElement = new Audio(url);
 
     audioElement.addEventListener('timeupdate', () => {
-      update((state) => ({ ...state, currentTime: audioElement.currentTime }));
+      if (get(audioStore).duration === audioElement.currentTime) {
+        handleNextTrack();
+      }
+
+      update((state) => { 
+        return {...state, currentTime: audioElement.currentTime } 
+      });
     })
 
     audioElement.play();
@@ -131,6 +150,8 @@ const createAudioStore = (): AudioStore => {
     })
   };
 
+  const changeTrackSequence = () => update((state) => ({...state, trackSequence: TrackSequenceOrder[state.trackSequence] }))
+
   return {
     subscribe,
     update,
@@ -139,7 +160,8 @@ const createAudioStore = (): AudioStore => {
     pauseAudio,
     resumeAudio,
     setVolume,
-    seek
+    seek,
+    changeTrackSequence
   };
 };
 
