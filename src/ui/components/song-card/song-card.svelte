@@ -16,6 +16,9 @@
 </li>
 <style>
   .song-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex: 1;
     position: relative;
     border-radius: var(--rounded-md);

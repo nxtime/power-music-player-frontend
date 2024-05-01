@@ -280,7 +280,6 @@
         & .time {
           font-family: 'Roboto Mono';
           font-size: var(--font-sm);
-
         }
 
         & .progress-bar {

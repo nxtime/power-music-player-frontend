@@ -24,7 +24,7 @@
       align-items: center;
       height: var(--spacing-2xl);
       gap: var(--spacing-sm);
-      padding-left: var(--spacing-xs);
+      padding-left: calc(var(--spacing-md) * 0.75);
 
       & > * {
         position: relative;

@@ -34,7 +34,7 @@
 
     background-color: var(--background);
 
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
 
     border-right: 1px solid hsl(var(--surface-0)) ;
 
@@ -43,7 +43,7 @@
     overflow: hidden;
 
     &.collapsed .navigation-container a {
-      height: var(--spacing-xl);
+      height: var(--spacing-2xl);
 
        & span {
         display: none;
@@ -51,7 +51,7 @@
     }
 
     & .menu-action {
-      --size: var(--spacing-xl);
+      --size: var(--spacing-2xl);
       
       min-width: var(--size);
       min-height: var(--size);
