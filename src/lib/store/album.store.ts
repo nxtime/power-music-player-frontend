@@ -3,10 +3,17 @@ import { audioStore } from "./create-audio.store";
 import { TrackSequence } from "../../interfaces/music";
 
 export interface AlbumState {
-  album: string;
-  songs: string[],
+  albums?: any[],
+  album?: string;
+  songs: { name: string, album: string }[],
   currentSongName: string;
   currentSongIndex: number;
+}
+
+const getRandomAlbum = () => {
+  const albums = get(albumStore)?.albums!;
+
+  return albums[Math.floor(Math.random() * albums.length)];
 }
 
 const sequenceNextTrack = (songsQty: number) => {
@@ -44,8 +51,10 @@ export const handleNextTrack = () => {
 
   const nextSong = get(albumStore).songs[nextSongIndex];
 
-  albumStore.update((prevState) => ({ ...prevState, currentSongIndex: nextSongIndex, currentSongName: nextSong }));
-  audioStore.playAudio(get(albumStore).album, nextSong);
+  const currentAlbum = get(albumStore).songs[nextSongIndex].album;
+
+  albumStore.update((prevState) => ({ ...prevState, currentSongIndex: nextSongIndex, currentSongName: nextSong.name }));
+  audioStore.playAudio(currentAlbum, nextSong.name);
 }
 
 export const handlePreviousTrack = () => {
@@ -53,15 +62,18 @@ export const handlePreviousTrack = () => {
 
   const previousSongIndex = tempPreviousSongIndex < 0 ? get(albumStore).songs.length - 1 : tempPreviousSongIndex;
 
+  console.log({ tempPreviousSongIndex, previousSongIndex})
+
   const previousSong = get(albumStore).songs[previousSongIndex];
 
-  albumStore.update((prevState) => ({ ...prevState, currentSongIndex: previousSongIndex, currentSongName: previousSong }));
-  audioStore.playAudio(get(albumStore).album, previousSong);
+  albumStore.update((prevState) => ({ ...prevState, currentSongIndex: previousSongIndex, currentSongName: previousSong.name }));
 
+  const currentAlbum = get(albumStore).songs[previousSongIndex].album;
+
+  audioStore.playAudio(currentAlbum, previousSong.name);
 }
 
 export const albumStore = writable<AlbumState>({
-  album: "",
   songs: [],
   currentSongName: "",
   currentSongIndex: -1

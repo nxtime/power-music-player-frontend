@@ -1,14 +1,24 @@
 <script lang="ts">
-    import { playTrackIcon } from "$lib/icons/soundbar";
+  import { playTrackIcon } from "$lib/icons/soundbar";
+    import { albumStore } from "$lib/store/album.store";
+  import { audioStore } from "$lib/store/create-audio.store";
 
   export let name: string;
   export let cover: string;
   export let defaultCover: string;
   export let album: string;
+  export let index: number = 0;
+
+  const startSong = () => {
+    albumStore.update((state) => ({ ...state, album, currentSongName: name, currentSongIndex: index }));
+    audioStore.playAudio(album, name);
+  }
 </script>
 <li class="song-card">
+  <button type="button" class="play-action" on:click={startSong}>
+    {@html playTrackIcon}
+  </button>
   {@html `<img src="${cover}" alt="${name}" onerror="this.onerror=null;this.src='${defaultCover}';" />`}
-  {@html playTrackIcon}
   <div class="song-card-info">
     <h3 class="title">{name}</h3>
     <h5 class="subtitle">{album}</h5>
@@ -16,6 +26,7 @@
 </li>
 <style>
   .song-card {
+    aspect-ratio: 1/1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -23,6 +34,25 @@
     position: relative;
     border-radius: var(--rounded-md);
     overflow: hidden;
+
+    & .play-action {
+      position: absolute;
+      z-index: 10;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center;
+      transform: scale(0);
+
+      font-size: var(--spacing-2xl);
+      transition: all ease 0.2s;
+    }
+
+    &:hover .play-action {
+      transform: scale(1);
+    }
 
     & img {
       aspect-ratio: 1/1;

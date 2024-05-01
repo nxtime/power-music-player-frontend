@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import SongCard from "../../ui/components/song-card/song-card.svelte";
+  import { albumStore } from "$lib/store/album.store";
 
-  export let data: { songs: any[] };
+  export let data: { songs: any[], albums: any[] };
 
   let currentLayout = "grid";
 
@@ -30,16 +32,24 @@
     currentSongs = data.songs.filter((_, i) => i >= (pagination - 1) * maxItemsPerPage && i < pagination * maxItemsPerPage)
   }
 
+  onMount(() => {
+    albumStore.set({
+      albums: data.albums,
+      songs: data.songs.map(({ name, album }) => ({ name, album }))
+    });
+  })
 </script>
 <div class="songs-page">
   <header class="songs-header">
     <h2>Songs ({data.songs.length} songs)</h2>
   </header>
-  <ul class="song-card-container {currentLayout}">
-    {#each currentSongs as song}
-      <SongCard {...song} />
-    {/each}
-  </ul>
+  <div class="songs-container">
+    <ul class="song-card-container {currentLayout}">
+      {#each currentSongs as song, index}
+        <SongCard {...song} index={(pagination - 1) * maxItemsPerPage + index} />
+      {/each}
+    </ul>
+  </div>
   <div class="pagination-container">
     <button class="pagination-action previous" on:click={handlePrevPage}>
       {"<"}
@@ -85,6 +95,11 @@
     }
   }
 
+  .songs-container {
+    height: 100%;
+    overflow-y: auto;
+  }
+
   .pagination-container {
     display: flex;
     justify-content: center;
@@ -114,10 +129,18 @@
     }
   }
 
+  @media (max-width: 50rem) {
+    .song-card-container.grid {
+      grid-template-rows: unset;
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
   @media (max-width: 30rem) {
     .song-card-container.grid {
-      grid-template-rows: repeat(15, 1fr);
+      grid-template-rows: unset;
       grid-template-columns: repeat(2, 1fr);
     }
   }
+
 </style>

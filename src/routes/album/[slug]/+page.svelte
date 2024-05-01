@@ -19,7 +19,7 @@
       album: name,
       currentSongName: "",
       currentSongIndex: -1,
-      songs: songs.map(({ name }) => name)
+      songs: songs.map(({ name }) => ({ name, album }))
     });
   });
 
