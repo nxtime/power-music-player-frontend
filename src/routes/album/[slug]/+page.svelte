@@ -12,7 +12,7 @@
   const album = name;
   const normalizedAlbumName = album.replaceAll(" ","-").toLowerCase();
 
-  const defaultImage = `https://s3.marcospaulo.dev.br/${normalizedAlbumName}/${normalizedAlbumName}.jpg`;
+  const defaultImage = `https://s3.marcospaulo.dev.br/music/${normalizedAlbumName}/${normalizedAlbumName}.jpg`;
 
   onMount(() => {
     albumStore.set({

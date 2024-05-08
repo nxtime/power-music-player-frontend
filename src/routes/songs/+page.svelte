@@ -2,12 +2,34 @@
   import { onMount } from "svelte";
   import SongCard from "../../ui/components/song-card/song-card.svelte";
   import { albumStore } from "$lib/store/album.store";
+  import { gridIcon, listIcon } from "$lib/icons/generic";
 
   export let data: { songs: any[], albums: any[] };
 
-  let currentLayout = "grid";
+  enum LayoutType {
+    Grid = "grid",
+    List = "list"
+  }
 
-  const toggleCurrentLayout = () => currentLayout === "grid" ? "list" : "grid";
+  const layoutIcons: Record<LayoutType, string> = {
+    [LayoutType.Grid]: gridIcon,
+    [LayoutType.List]: listIcon
+  }
+
+  const layoutOrder: Record<LayoutType, LayoutType> = {
+    [LayoutType.Grid]: LayoutType.List,
+    [LayoutType.List]: LayoutType.Grid
+  } 
+
+  let currentLayout = LayoutType.Grid;
+  
+  let currentLayoutIcon = layoutIcons[currentLayout];
+
+  const toggleCurrentLayout = () => {
+    currentLayout = layoutOrder[currentLayout];
+
+    currentLayoutIcon = layoutIcons[currentLayout];
+  };
 
   const songsQty = data.songs.length
 
@@ -42,6 +64,9 @@
 <div class="songs-page">
   <header class="songs-header">
     <h2>Songs ({data.songs.length} songs)</h2>
+    <button class="layout-toggle" on:click={toggleCurrentLayout}>
+      {@html currentLayoutIcon}
+    </button>
   </header>
   <div class="songs-container">
     <ul class="song-card-container {currentLayout}">
@@ -50,16 +75,19 @@
       {/each}
     </ul>
   </div>
-  <div class="pagination-container">
-    <button class="pagination-action previous" on:click={handlePrevPage}>
-      {"<"}
-    </button>
-    <span>Current page: <span class="number">{String(pagination).padStart(2, "0")}</span></span>
-    <button class="pagination-action next" on:click={handleNextPage}>
-      {">"}
-    </button>
-  </div>
+  {#if maxPage > 1}
+    <div class="pagination-container">
+      <button class="pagination-action previous" on:click={handlePrevPage}>
+        {"<"}
+      </button>
+      <span>Current page: <span class="number">{String(pagination).padStart(2, "0")}</span></span>
+      <button class="pagination-action next" on:click={handleNextPage}>
+        {">"}
+      </button>
+    </div>
+  {/if}
 </div>
+
 <style>
   .songs-page {
     display: flex;
@@ -74,7 +102,27 @@
 
   .songs-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: var(--spacing-md);
+
+    & .layout-toggle {
+      --size: var(--spacing-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--size);
+      min-width: var(--size);
+      font-size: var(--spacing-lg);
+      background-color: hsl(var(--surface-0) / 0);
+      border-radius: var(--rounded-full);
+      transition: all ease 0.2s;
+
+      &:hover {
+        color: hsl(var(--subtext-1));
+        background-color: hsl(var(--surface-0));
+      }
+    }
   }
 
   .song-card-container {
@@ -87,11 +135,44 @@
       display: grid;
       grid-template-rows: repeat(6, 1fr);
       grid-template-columns: repeat(5, 1fr);
+
     }
 
     &.list {
       display: flex;
       flex-direction: column;
+      gap: var(--spacing-xs);
+
+      & .song-card {
+        display: flex;
+        aspect-ratio: unset;
+        height: 4rem;
+        max-height: 4rem;
+        overflow: hidden;
+
+        & .play-action {
+          left: calc(var(--spacing-xs) / 2);
+          width: unset;
+          height: unset;
+        }
+
+        & img {
+          aspect-ratio: 1/1;
+          height: inherit;
+
+        }
+
+        & .song-card-info {
+          position: unset;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding-block: 0;
+          padding-inline: var(--spacing-md);
+          height: inherit;
+          background-color: hsl(var(--mantle));
+        }
+      }
     }
   }
 
@@ -140,6 +221,10 @@
     .song-card-container.grid {
       grid-template-rows: unset;
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .songs-header {
+      margin-left: auto;
     }
   }
 

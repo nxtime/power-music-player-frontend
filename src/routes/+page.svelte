@@ -5,7 +5,6 @@
 
   export let data: { albums: Album[] };
 
-console.log(data)
 </script>
 <div class="page">
   <Search />

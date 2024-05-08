@@ -43,8 +43,8 @@
       const normalizedAlbum = album.replaceAll(" ", "-").toLowerCase();
       const normalizedSong = song.replaceAll(" ", "-").toLowerCase();
       
-      image = `https://s3.marcospaulo.dev.br/${normalizedAlbum}/${normalizedSong}.jpg`;
-      defaultImage = `https://s3.marcospaulo.dev.br/${normalizedAlbum}/${normalizedAlbum}.jpg`;
+      image = `https://s3.marcospaulo.dev.br/music/${normalizedAlbum}/${normalizedSong}.jpg`;
+      defaultImage = `https://s3.marcospaulo.dev.br/music/${normalizedAlbum}/${normalizedAlbum}.jpg`;
     }
   });
  
